@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace MusicLibraryTool
 {
@@ -35,7 +36,7 @@ namespace MusicLibraryTool
             GenerateArtistPlaylists(artistPlaylists);
             
             var collectionPlaylists = Playlists.Where(x => x.PlaylistType == PlaylistType.Collection).ToList();
-            //GenerateCollectionPlaylists(collectionPlaylists);
+            GenerateCollectionPlaylists(collectionPlaylists);
         }
 
         private void GenerateAlbumPlaylists(List<Playlist> albumPlaylists){
@@ -54,11 +55,26 @@ namespace MusicLibraryTool
             }
         }
 
-        private void GenerateCollectionPlaylists(List<Playlist> albumPlaylists){
-            foreach(var albumPlaylist in albumPlaylists){
-                Console.WriteLine("Generating playlist {0}", albumPlaylist.PlaylistDefinitionNameFull);
-                var tracks = Tracks.Where(x => x.FolderNameFull.Contains(albumPlaylist.PlaylistName)).ToList();
-                CreatePlaylistFile(albumPlaylist, tracks);
+        private void GenerateCollectionPlaylists(List<Playlist> collectionPlaylists){
+            foreach(var collectionPlaylist in collectionPlaylists){
+                Console.WriteLine("Generating playlist {0}",collectionPlaylist.PlaylistDefinitionNameFull);
+                var tracks = new List<Track>();
+                foreach(var line in collectionPlaylist.PlaylistContent){
+                    var match = Regex.Match(line, "(.*?) - (.*?) - (.*)");
+                    var track = Tracks.Where(x=> x.Artist.ToLower() == match.Groups[1].Value.ToLower() 
+                        && x.Album.ToLower() == match.Groups[2].Value.ToLower()
+                        && x.TrackName.ToLower() == match.Groups[3].Value.ToLower() )
+                        .FirstOrDefault();
+                    if(track != null){
+                        tracks.Add(track);
+                    }
+                    else {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"Could not locate {line}");
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                    }
+                }
+                CreatePlaylistFile(collectionPlaylist, tracks);
             }
         }
 
