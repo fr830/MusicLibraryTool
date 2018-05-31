@@ -32,18 +32,10 @@ namespace MusicLibraryTool
             GenerateAlbumPlaylists(albumPlaylists);
 
             var artistPlaylists = Playlists.Where(x => x.PlaylistType == PlaylistType.Artist).ToList();
-            //GenerateArtistPlaylists(artistPlaylists);
+            GenerateArtistPlaylists(artistPlaylists);
             
             var collectionPlaylists = Playlists.Where(x => x.PlaylistType == PlaylistType.Collection).ToList();
             //GenerateCollectionPlaylists(collectionPlaylists);
-        }
-
-        private void GenerateArtistPlaylists(List<Playlist> albumPlaylists){
-            foreach(var albumPlaylist in albumPlaylists){
-                Console.WriteLine("Generating playlist {0}", albumPlaylist.PlaylistDefinitionNameFull);
-                var tracks = Tracks.Where(x => x.FolderNameFull.Contains(albumPlaylist.PlaylistName)).ToList();
-                CreatePlaylistFile(albumPlaylist, tracks);
-            }
         }
 
         private void GenerateAlbumPlaylists(List<Playlist> albumPlaylists){
@@ -51,6 +43,14 @@ namespace MusicLibraryTool
                 Console.WriteLine("Generating playlist {0}", albumPlaylist.PlaylistDefinitionNameFull);
                 var tracks = Tracks.Where(x => x.FolderNameFull.Contains(albumPlaylist.PlaylistName)).ToList();
                 CreatePlaylistFile(albumPlaylist, tracks);
+            }
+        }
+
+        private void GenerateArtistPlaylists(List<Playlist> ArtistPlaylists){
+            foreach(var ArtistPlaylist in ArtistPlaylists){
+                Console.WriteLine("Generating playlist {0}",ArtistPlaylist.PlaylistDefinitionNameFull);
+                var tracks = Tracks.Where(x => x.Artist == ArtistPlaylist.PlaylistName).ToList();
+                CreatePlaylistFile(ArtistPlaylist, tracks);
             }
         }
 
