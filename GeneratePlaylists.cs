@@ -22,7 +22,7 @@ namespace MusicLibraryTool
         public void Generate() {
             //Convert m3u8 playlists to collection playlists
             //[^\\]*\[.*\] (.*?) \- (.*?) \[.*\]\\([^\\]*)\..*$
-
+            ConvertM3U8ToCollection();
 
             Playlists = Library.GetAllPlaylists(PlaylistPath, RootPath, PlaylistPath);
             Tracks = Library.GetAllTracks(LibraryPath);
@@ -37,6 +37,20 @@ namespace MusicLibraryTool
             
             var collectionPlaylists = Playlists.Where(x => x.PlaylistType == PlaylistType.Collection).ToList();
             GenerateCollectionPlaylists(collectionPlaylists);
+        }
+
+        public void ConvertM3U8ToCollection(){
+            var filePaths = Directory.GetFiles(PlaylistPath).Where(x => x.Contains(".m3u8")).ToList();
+            foreach(string filePath in filePaths){
+                var file = File.Create(filePath.Replace(".m3u8",""));
+            
+                List<string> lines = File.ReadAllText(filePath).Split(new[]{ Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                foreach(var line in lines){
+                    using(var Writer = new StreamWriter(file)){
+                            Writer.WriteLine(line.Replace(RootPath,".."));
+                    }
+                }
+            }
         }
 
         private void GenerateAlbumPlaylists(List<Playlist> albumPlaylists){
