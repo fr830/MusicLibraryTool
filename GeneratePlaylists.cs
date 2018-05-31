@@ -40,14 +40,22 @@ namespace MusicLibraryTool
         }
 
         public void ConvertM3U8ToCollection(){
-            var filePaths = Directory.GetFiles(PlaylistPath).Where(x => x.Contains(".m3u8")).ToList();
+            var filePaths = Directory.GetFiles(PlaylistPath,"*",SearchOption.AllDirectories).Where(x => x.Contains(".m3u8")).ToList();
             foreach(string filePath in filePaths){
-                var file = File.Create(filePath.Replace(".m3u8",""));
-            
+                Console.WriteLine("Converting m3u8 playlist {0}", filePath);
+
+                string fileName = Regex.Match(filePath, "([^\\\\]*?)$").Value;
+                string newFileName =  "[Collection] "+fileName.Replace(".m3u8","");
+
+                var file = File.Create(filePath.Replace(fileName,newFileName));
+
                 List<string> lines = File.ReadAllText(filePath).Split(new[]{ Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                foreach(var line in lines){
-                    using(var Writer = new StreamWriter(file)){
-                            Writer.WriteLine(line.Replace(RootPath,".."));
+                using(var Writer = new StreamWriter(file)){
+                    foreach(var line in lines){
+                        if(line.Trim() != ""){
+                            var match = Regex.Match(line, "[^\\\\]*\\[.*\\] (.*?) \\- (.*?) \\[.*\\]\\\\([^\\\\]*)\\..*$");
+                            Writer.WriteLine($"{match.Groups[1].Value} - {match.Groups[2].Value} - {match.Groups[3].Value}");
+                        }
                     }
                 }
             }
