@@ -85,7 +85,7 @@ namespace MusicLibraryTool
                     var match = Regex.Match(line, "(.*?) - (.*?) - (.*)");
                     var track = Tracks.Where(x=> x.Artist.ToLower() == match.Groups[1].Value.ToLower() 
                         && x.Album.ToLower() == match.Groups[2].Value.ToLower()
-                        && x.TrackName.ToLower() == match.Groups[3].Value.ToLower() )
+                        && x.TrackName.ToLower().Contains(match.Groups[3].Value.ToLower()) )
                         .FirstOrDefault();
                     if(track != null){
                         tracks.Add(track);
