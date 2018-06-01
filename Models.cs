@@ -57,7 +57,7 @@ namespace MusicLibraryTool
         public Playlist(string playlistPath, string rootPath, string playlistRootPath){
             PlaylistDefinitionPath = playlistPath;
             PlaylistDefinitionNameFull = playlistPath.Split('\\')[playlistPath.Split('\\').Length-1];
-            PlaylistImplementationPath = PlaylistDefinitionPath.Replace(playlistRootPath, rootPath) + ".m3u";
+            PlaylistImplementationPath = PlaylistDefinitionPath.Replace(playlistRootPath, rootPath) + ".m3u8";
             
             PlaylistType = Library.StringToPlaylistType(PlaylistDefinitionNameFull);
             PlaylistContent = File.ReadAllText(playlistPath).Split(new[]{ Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
